@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Stopwatch</title>
+    <style>
+      body {
+        font-family: "Arial", sans-serif;
+        text-align: center;
+      }
+
+      #display {
+        font-size: 2em;
+        margin-bottom: 10px;
+      }
+
+      #lapTimes {
+        text-align: left;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="display">00:00:00</div>
+    <button onclick="startPause()">Start</button>
+    <button onclick="reset()">Reset</button>
+    <button onclick="lap()">Lap</button>
+
+    <div id="lapTimes"></div>
+
+    <script>
+      let timer;
+      let isRunning = false;
+      let startTime;
+      let lapCounter = 1;
+
+      function startPause() {
+        if (isRunning) {
+          clearInterval(timer);
+          document.querySelector("button").textContent = "Resume";
+        } else {
+          startTime =
+            new Date() - (lapCounter > 1 ? lapTimes[lapCounter - 2] : 0);
+          timer = setInterval(updateDisplay, 1000);
+          document.querySelector("button").textContent = "Pause";
+        }
+        isRunning = !isRunning;
+      }
+
+      function reset() {
+        clearInterval(timer);
+        document.getElementById("display").textContent = "00:00:00";
+        document.getElementById("lapTimes").textContent = "";
+        isRunning = false;
+        lapCounter = 1;
+        document.querySelector("button").textContent = "Start";
+      }
+
+      function lap() {
+        if (isRunning) {
+          const lapTime = new Date() - startTime;
+          lapTimes.push(lapTime);
+          const formattedTime = formatTime(lapTime);
+          const lapElement = document.createElement("div");
+          lapElement.textContent = `Lap ${lapCounter++}: ${formattedTime}`;
+          document.getElementById("lapTimes").prepend(lapElement);
+        }
+      }
+
+      function updateDisplay() {
+        const elapsedTime = new Date() - startTime;
+        document.getElementById("display").textContent =
+          formatTime(elapsedTime);
+      }
+
+      function formatTime(time) {
+        const date = new Date(time);
+        const hours = date.getUTCHours().toString().padStart(2, "0");
+        const minutes = date.getUTCMinutes().toString().padStart(2, "0");
+        const seconds = date.getUTCSeconds().toString().padStart(2, "0");
+        return `${hours}:${minutes}:${seconds}`;
+      }
+
+      // Array to store lap times
+      const lapTimes = [];
+    </script>
+  </body>
+</html>
